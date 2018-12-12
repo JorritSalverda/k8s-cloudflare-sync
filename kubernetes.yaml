@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-cloudflare-sync
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubernetes-cloudflare-sync
+  namespace: kubernetes-cloudflare-sync
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-cloudflare-sync
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-cloudflare-sync-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubernetes-cloudflare-sync
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-cloudflare-sync
+  namespace: kubernetes-cloudflare-sync
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes-cloudflare-sync
+  namespace: kubernetes-cloudflare-sync
+  labels:
+    app: kubernetes-cloudflare-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubernetes-cloudflare-sync
+  template:
+    metadata:
+      labels:
+        app: kubernetes-cloudflare-sync
+    spec:
+      serviceAccount: kubernetes-cloudflare-sync
+      containers:
+      - name: kubernetes-cloudflare-sync
+        image: calebdoxsey/kubernetes-cloudflare-sync
+        args:
+        - --dns-name=${HOSTNAME}
+        env:
+        - name: CF_API_KEY
+          value: "${CF_API_KEY}"
+        - name: CF_API_EMAIL
+          value: "${CF_API_EMAIL}"
