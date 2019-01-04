@@ -40,6 +40,8 @@ metadata:
     app: kubernetes-cloudflare-sync
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: kubernetes-cloudflare-sync
