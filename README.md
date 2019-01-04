@@ -11,5 +11,5 @@ kubectl create clusterrolebinding owner-cluster-admin-binding \
 To install kubernetes-cloudflare-sync run the following command:
 
 ```
-cat kubernetes.yaml | HOSTNAME=nginx.myserver.com CF_API_EMAIL=*** CF_API_KEY=*** envsubst | kubectl apply -f -
+cat kubernetes.yaml | HOSTNAME=nginx.myserver.com CF_API_EMAIL=*** CF_API_KEY=*** envsubst \$HOSTNAME,\$CF_API_EMAIL,\$CF_API_KEY | kubectl apply -f -
 ```
